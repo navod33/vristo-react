@@ -7,6 +7,7 @@ import Dropdown from '../../components/Dropdown';
 import i18next from 'i18next';
 import IconCaretDown from '../../components/Icon/IconCaretDown';
 import IconMail from '../../components/Icon/IconMail';
+import { passwordReset } from '../../store/api/auth';
 
 const RecoverIdBox = () => {
     const dispatch = useDispatch();
@@ -26,8 +27,28 @@ const RecoverIdBox = () => {
     };
     const [flag, setFlag] = useState(themeConfig.locale);
 
-    const submitForm = () => {
-        navigate('/');
+    const [email, setEmail] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [success, setSuccess] = useState<string | null>(null);
+
+    console.log('error', error);
+    const submitForm = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setLoading(true);
+        setError(null);
+        setSuccess(null);
+
+        try {
+            const response = await passwordReset(email);
+            setSuccess(response.message);
+            // navigate('/auth/signin');
+        } catch (err: any) {
+            // setError(err.message);
+            setError('Failed to send password reset email. Please try again.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -70,7 +91,6 @@ const RecoverIdBox = () => {
                                                         className={`flex w-full hover:text-primary rounded-lg ${flag === item.code ? 'bg-primary/10 text-primary' : ''}`}
                                                         onClick={() => {
                                                             i18next.changeLanguage(item.code);
-                                                            // setFlag(item.code);
                                                             setLocale(item.code);
                                                         }}
                                                     >
@@ -95,14 +115,24 @@ const RecoverIdBox = () => {
                                         Email
                                     </label>
                                     <div className="relative text-white-dark">
-                                        <input id="Email" type="email" placeholder="Enter Email" className="form-input ps-10 placeholder:text-white-dark" />
+                                        <input
+                                            id="Email"
+                                            type="email"
+                                            placeholder="Enter Email"
+                                            className="form-input ps-10 placeholder:text-white-dark"
+                                            value={email}
+                                            onChange={(e) => setEmail(e.target.value)}
+                                            required
+                                        />
                                         <span className="absolute start-4 top-1/2 -translate-y-1/2">
                                             <IconMail fill={true} />
                                         </span>
                                     </div>
                                 </div>
-                                <button type="submit" className="btn btn-gradient !mt-6 w-full border-0 uppercase shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)]">
-                                    RECOVER
+                                {success && <div className="text-green-500">{success}</div>}
+                                {error && <div className="text-red-500">{error}</div>}
+                                <button type="submit" className="btn btn-gradient !mt-6 w-full border-0 uppercase shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)]" disabled={loading}>
+                                    {loading ? 'Sending...' : 'RECOVER'}
                                 </button>
                             </form>
                         </div>

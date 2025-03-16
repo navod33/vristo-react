@@ -28,3 +28,15 @@ export const logout = async (token: string) => {
         console.error('Logout failed:', error);
     }
 };
+
+// Handle Login
+export const passwordReset = async (email: string) => {
+    try {
+        const response = await axios.post(`${API_URL}/api/v1/password/email`, {
+            email,
+        });
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+};

@@ -66,7 +66,7 @@ const Header = () => {
 
     const handleLogout = () => {
         dispatch(logoutUser());
-        // navigate('/auth/signin');
+        localStorage.removeItem('token');
     };
 
     function createMarkup(messages: any) {
