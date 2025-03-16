@@ -18,6 +18,7 @@ export const login = async (email: string, password: string) => {
 // Handle Logout
 export const logout = async (token: string) => {
     try {
+        console.log('eeeeeee', token);
         await axios.get(`${API_URL}/api/v1/logout`, {
             headers: {
                 Authorization: `Bearer ${token}`,

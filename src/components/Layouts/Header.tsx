@@ -66,7 +66,7 @@ const Header = () => {
 
     const handleLogout = () => {
         dispatch(logoutUser());
-        navigate('/auth/signin');
+        // navigate('/auth/signin');
     };
 
     function createMarkup(messages: any) {
@@ -463,9 +463,9 @@ const Header = () => {
                                         </Link>
                                     </li>
                                     <li className="border-t border-white-light dark:border-white-light/10">
-                                        <Link to="/auth/signin" className="text-danger !py-3">
+                                        <Link to="/auth/signin" className="text-danger !py-3" onClick={handleLogout}>
                                             <IconLogout className="w-4.5 h-4.5 ltr:mr-2 rtl:ml-2 rotate-90 shrink-0" />
-                                            <button onClick={handleLogout}> Sign Out</button>
+                                            <span>Sign Out</span>
                                         </Link>
                                     </li>
                                 </ul>
