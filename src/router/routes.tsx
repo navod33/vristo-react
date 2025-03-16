@@ -3,6 +3,8 @@ const Index = lazy(() => import('../pages/Index'));
 const UserTable = lazy(() => import('../pages/users/userTable'));
 const LoginBoxed = lazy(() => import('../pages/Authentication/LoginBoxed'));
 const RegisterBoxed = lazy(() => import('../pages/Authentication/RegisterBoxed'));
+const ResetPassword = lazy(() => import('../pages/Authentication/RecoverIdBox'));
+
 import ProtectedRoute from '../components/ProtectedRoute';
 
 const routes = [
@@ -32,6 +34,11 @@ const routes = [
     {
         path: '/auth/signup',
         element: <RegisterBoxed />,
+        layout: 'blank',
+    },
+    {
+        path: '/auth/reset-password',
+        element: <ResetPassword />,
         layout: 'blank',
     },
 ];
