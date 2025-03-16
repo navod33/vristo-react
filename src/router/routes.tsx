@@ -3,17 +3,26 @@ const Index = lazy(() => import('../pages/Index'));
 const UserTable = lazy(() => import('../pages/users/userTable'));
 const LoginBoxed = lazy(() => import('../pages/Authentication/LoginBoxed'));
 const RegisterBoxed = lazy(() => import('../pages/Authentication/RegisterBoxed'));
+import ProtectedRoute from '../components/ProtectedRoute';
 
 const routes = [
     // dashboard
     {
         path: '/',
-        element: <Index />,
+        element: (
+            <ProtectedRoute>
+                <Index />
+            </ProtectedRoute>
+        ),
         layout: 'default',
     },
     {
         path: '/users/user-table',
-        element: <UserTable />,
+        element: (
+            <ProtectedRoute>
+                <UserTable />
+            </ProtectedRoute>
+        ),
     },
     {
         path: '/auth/signin',

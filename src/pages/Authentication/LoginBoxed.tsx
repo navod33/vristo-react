@@ -12,6 +12,8 @@ import IconInstagram from '../../components/Icon/IconInstagram';
 import IconFacebookCircle from '../../components/Icon/IconFacebookCircle';
 import IconTwitter from '../../components/Icon/IconTwitter';
 import IconGoogle from '../../components/Icon/IconGoogle';
+import { login } from '../../store/api/auth';
+import { setUser, setToken } from '../../store/authSlice';
 
 const LoginBoxed = () => {
     const dispatch = useDispatch();
@@ -19,6 +21,11 @@ const LoginBoxed = () => {
         dispatch(setPageTitle('Login Boxed'));
     });
     const navigate = useNavigate();
+
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+
     const isDark = useSelector((state: IRootState) => state.themeConfig.theme === 'dark' || state.themeConfig.isDarkMode);
     const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
     const themeConfig = useSelector((state: IRootState) => state.themeConfig);
@@ -32,8 +39,24 @@ const LoginBoxed = () => {
     };
     const [flag, setFlag] = useState(themeConfig.locale);
 
-    const submitForm = () => {
-        navigate('/');
+    const submitForm = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        try {
+            const response = await login(email, password);
+            console.log('response', response);
+            const { access_token, user } = response;
+            console.log('token', access_token);
+
+            localStorage.setItem('token', access_token);
+            dispatch(setToken(access_token)); // Set token in Redux
+            dispatch(setUser(user)); // Set user in Redux
+
+            // Redirect to dashboard or home
+            navigate('/');
+        } catch (err) {
+            setError('Invalid login credentials');
+        }
     };
 
     return (
@@ -99,7 +122,14 @@ const LoginBoxed = () => {
                                 <div>
                                     <label htmlFor="Email">Email</label>
                                     <div className="relative text-white-dark">
-                                        <input id="Email" type="email" placeholder="Enter Email" className="form-input ps-10 placeholder:text-white-dark" />
+                                        <input
+                                            id="Email"
+                                            type="email"
+                                            placeholder="Enter Email"
+                                            value={email}
+                                            onChange={(e) => setEmail(e.target.value)}
+                                            className="form-input ps-10 placeholder:text-white-dark"
+                                        />
                                         <span className="absolute start-4 top-1/2 -translate-y-1/2">
                                             <IconMail fill={true} />
                                         </span>
@@ -108,7 +138,14 @@ const LoginBoxed = () => {
                                 <div>
                                     <label htmlFor="Password">Password</label>
                                     <div className="relative text-white-dark">
-                                        <input id="Password" type="password" placeholder="Enter Password" className="form-input ps-10 placeholder:text-white-dark" />
+                                        <input
+                                            id="Password"
+                                            type="password"
+                                            placeholder="Enter Password"
+                                            value={password}
+                                            onChange={(e) => setPassword(e.target.value)}
+                                            className="form-input ps-10 placeholder:text-white-dark"
+                                        />
                                         <span className="absolute start-4 top-1/2 -translate-y-1/2">
                                             <IconLockDots fill={true} />
                                         </span>
@@ -120,6 +157,7 @@ const LoginBoxed = () => {
                                         <span className="text-white-dark">Subscribe to weekly newsletter</span>
                                     </label>
                                 </div>
+                                <div>{error && <p className="text-red-500 text-sm font-medium mt-5 text-center">{error}</p>}</div>
                                 <button type="submit" className="btn btn-gradient !mt-6 w-full border-0 uppercase shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)]">
                                     Sign in
                                 </button>
@@ -168,12 +206,12 @@ const LoginBoxed = () => {
                                     </li>
                                 </ul>
                             </div>
-                            <div className="text-center dark:text-white">
+                            {/* <div className="text-center dark:text-white">
                                 Don't have an account ?&nbsp;
                                 <Link to="/auth/signup" className="uppercase text-primary underline transition hover:text-black dark:hover:text-white">
                                     SIGN UP
                                 </Link>
-                            </div>
+                            </div> */}
                         </div>
                     </div>
                 </div>
