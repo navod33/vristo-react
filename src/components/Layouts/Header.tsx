@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { IRootState } from '../../store';
 import { toggleRTL, toggleTheme, toggleSidebar } from '../../store/themeConfigSlice';
@@ -32,6 +33,7 @@ import IconMenuDatatables from '../Icon/Menu/IconMenuDatatables';
 import IconMenuForms from '../Icon/Menu/IconMenuForms';
 import IconMenuPages from '../Icon/Menu/IconMenuPages';
 import IconMenuMore from '../Icon/Menu/IconMenuMore';
+import { logoutUser } from '../../store/authSlice';
 
 const Header = () => {
     const location = useLocation();
@@ -60,6 +62,12 @@ const Header = () => {
 
     const themeConfig = useSelector((state: IRootState) => state.themeConfig);
     const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        dispatch(logoutUser());
+        navigate('/auth/signin');
+    };
 
     function createMarkup(messages: any) {
         return { __html: messages };
@@ -457,7 +465,7 @@ const Header = () => {
                                     <li className="border-t border-white-light dark:border-white-light/10">
                                         <Link to="/auth/signin" className="text-danger !py-3">
                                             <IconLogout className="w-4.5 h-4.5 ltr:mr-2 rtl:ml-2 rotate-90 shrink-0" />
-                                            Sign Out
+                                            <button onClick={handleLogout}> Sign Out</button>
                                         </Link>
                                     </li>
                                 </ul>

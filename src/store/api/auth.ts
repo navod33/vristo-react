@@ -14,3 +14,16 @@ export const login = async (email: string, password: string) => {
         throw error;
     }
 };
+
+// Handle Logout
+export const logout = async (token: string) => {
+    try {
+        await axios.get(`${API_URL}/api/v1/logout`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+    } catch (error) {
+        console.error('Logout failed:', error);
+    }
+};
