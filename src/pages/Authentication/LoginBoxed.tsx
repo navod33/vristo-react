@@ -19,7 +19,7 @@ const LoginBoxed = () => {
     const dispatch = useDispatch();
     useEffect(() => {
         dispatch(setPageTitle('Login Boxed'));
-    });
+    }, []);
     const navigate = useNavigate();
 
     const [email, setEmail] = useState('');
@@ -54,8 +54,12 @@ const LoginBoxed = () => {
 
             // Redirect to dashboard or home
             navigate('/');
-        } catch (err) {
-            setError('Invalid login credentials');
+        } catch (err: any) {
+            if (err.response?.data?.message) {
+                setError(err.response.data.message);
+            } else {
+                setError('Something went wrong. Please try again.');
+            }
         }
     };
 
