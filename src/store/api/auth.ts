@@ -29,12 +29,22 @@ export const logout = async (token: string) => {
     }
 };
 
-// Handle Login
+// send reset passwod link
 export const passwordResetLink = async (email: string) => {
     try {
         const response = await axios.post(`${API_URL}/api/v1/password/email`, {
             email,
         });
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+};
+
+// Handle reset passwod link
+export const passwordReset = async (data: any) => {
+    try {
+        const response = await axios.post(`${API_URL}/api/v1/password/reset`, data);
         return response.data;
     } catch (error) {
         throw error;

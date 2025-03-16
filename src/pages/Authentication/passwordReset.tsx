@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { IRootState } from '../../store';
 import { useEffect, useState } from 'react';
@@ -6,37 +6,78 @@ import { setPageTitle, toggleRTL } from '../../store/themeConfigSlice';
 import Dropdown from '../../components/Dropdown';
 import i18next from 'i18next';
 import IconCaretDown from '../../components/Icon/IconCaretDown';
-import IconMail from '../../components/Icon/IconMail';
+import { passwordReset } from '../../store/api/auth';
+import { useParams } from 'react-router-dom';
 
 const ResetPasswordBox = () => {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
+    // const [searchParams] = useSearchParams(); // Get query params from URL
+    // const token = searchParams.get('token'); // Extract reset token
+    const { token } = useParams();
+
+    console.log('token', token);
+
     useEffect(() => {
         dispatch(setPageTitle('Reset Password'));
-    });
-    const navigate = useNavigate();
-    const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl' ? true : false;
+    }, [dispatch]);
+
+    const isRtl = useSelector((state: IRootState) => state.themeConfig.rtlClass) === 'rtl';
     const themeConfig = useSelector((state: IRootState) => state.themeConfig);
+
     const setLocale = (flag: string) => {
         setFlag(flag);
-        if (flag.toLowerCase() === 'ae') {
-            dispatch(toggleRTL('rtl'));
-        } else {
-            dispatch(toggleRTL('ltr'));
-        }
+        dispatch(toggleRTL(flag.toLowerCase() === 'ae' ? 'rtl' : 'ltr'));
     };
+
     const [flag, setFlag] = useState(themeConfig.locale);
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [successMessage, setSuccessMessage] = useState('');
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (password !== confirmPassword) {
-            setError('Passwords do not match');
+
+        if (!token) {
+            setError('Invalid or missing reset token.');
             return;
         }
+
+        if (password !== confirmPassword) {
+            setError('Passwords do not match.');
+            return;
+        }
+
         setError('');
-        navigate('/');
+        setLoading(true);
+
+        try {
+            const resetPassword = {
+                email,
+                password,
+                password_confirmation: confirmPassword,
+                token,
+            };
+
+            console.log('resetPassword', resetPassword);
+
+            const response = await passwordReset(resetPassword);
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Password reset failed.');
+            }
+
+            setSuccessMessage('Password reset successful! Redirecting...');
+            setTimeout(() => navigate('/login'), 2000);
+        } catch (err: any) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -44,95 +85,67 @@ const ResetPasswordBox = () => {
             <div className="absolute inset-0">
                 <img src="/assets/images/auth/bg-gradient.png" alt="image" className="h-full w-full object-cover" />
             </div>
-
             <div className="relative flex min-h-screen items-center justify-center bg-[url(/assets/images/auth/map.png)] bg-cover bg-center bg-no-repeat px-6 py-10 dark:bg-[#060818] sm:px-16">
                 <img src="/assets/images/auth/coming-soon-object1.png" alt="image" className="absolute left-0 top-1/2 h-full max-h-[893px] -translate-y-1/2" />
                 <img src="/assets/images/auth/coming-soon-object2.png" alt="image" className="absolute left-24 top-0 h-40 md:left-[30%]" />
                 <img src="/assets/images/auth/coming-soon-object3.png" alt="image" className="absolute right-0 top-0 h-[300px]" />
-                <img src="/assets/images/auth/polygon-object.svg" alt="image" className="absolute bottom-0 end-[28%]" />
                 <div className="relative w-full max-w-[870px] rounded-md bg-[linear-gradient(45deg,#fff9f9_0%,rgba(255,255,255,0)_25%,rgba(255,255,255,0)_75%,_#fff9f9_100%)] p-2 dark:bg-[linear-gradient(52.22deg,#0E1726_0%,rgba(14,23,38,0)_18.66%,rgba(14,23,38,0)_51.04%,rgba(14,23,38,0)_80.07%,#0E1726_100%)]">
                     <div className="relative flex flex-col justify-center rounded-md bg-white/60 backdrop-blur-lg dark:bg-black/50 px-6 lg:min-h-[758px] py-20">
-                        <div className="absolute top-6 end-6">
-                            <div className="dropdown">
-                                <Dropdown
-                                    offset={[0, 8]}
-                                    placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`}
-                                    btnClassName="flex items-center gap-2.5 rounded-lg border border-white-dark/30 bg-white px-2 py-1.5 text-white-dark hover:border-primary hover:text-primary dark:bg-black"
-                                    button={
-                                        <>
-                                            <div>
-                                                <img src={`/assets/images/flags/${flag.toUpperCase()}.svg`} alt="image" className="h-5 w-5 rounded-full object-cover" />
-                                            </div>
-                                            <div className="text-base font-bold uppercase">{flag}</div>
-                                            <span className="shrink-0">
-                                                <IconCaretDown />
-                                            </span>
-                                        </>
-                                    }
-                                >
-                                    <ul className="!px-2 text-dark dark:text-white-dark grid grid-cols-2 gap-2 font-semibold dark:text-white-light/90 w-[280px]">
-                                        {themeConfig.languageList.map((item: any) => {
-                                            return (
-                                                <li key={item.code}>
-                                                    <button
-                                                        type="button"
-                                                        className={`flex w-full hover:text-primary rounded-lg ${flag === item.code ? 'bg-primary/10 text-primary' : ''}`}
-                                                        onClick={() => {
-                                                            i18next.changeLanguage(item.code);
-                                                            setLocale(item.code);
-                                                        }}
-                                                    >
-                                                        <img src={`/assets/images/flags/${item.code.toUpperCase()}.svg`} alt="flag" className="w-5 h-5 object-cover rounded-full" />
-                                                        <span className="ltr:ml-3 rtl:mr-3">{item.name}</span>
-                                                    </button>
-                                                </li>
-                                            );
-                                        })}
-                                    </ul>
-                                </Dropdown>
-                            </div>
-                        </div>
                         <div className="mx-auto w-full max-w-[440px]">
-                            <div className="mb-7">
-                                <h1 className="mb-3 text-2xl font-bold !leading-snug dark:text-white">Reset Password</h1>
-                                <p>Enter your new password below</p>
-                            </div>
+                            <h1 className="mb-3 text-2xl font-bold !leading-snug dark:text-white">Reset Password</h1>
+                            <p>Enter your new password below</p>
+
                             <form className="space-y-5" onSubmit={handleSubmit}>
+                                <div>
+                                    <label htmlFor="Email" className="dark:text-white">
+                                        Email
+                                    </label>
+                                    <input id="Email" type="email" placeholder="Enter your email" className="form-input w-full" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                                </div>
+
                                 <div>
                                     <label htmlFor="Password" className="dark:text-white">
                                         New Password
                                     </label>
-                                    <div className="relative text-white-dark">
-                                        <input
-                                            id="Password"
-                                            type="password"
-                                            placeholder="Enter New Password"
-                                            className="form-input ps-10 placeholder:text-white-dark"
-                                            value={password}
-                                            onChange={(e) => setPassword(e.target.value)}
-                                        />
-                                    </div>
+                                    <input
+                                        id="Password"
+                                        type="password"
+                                        placeholder="Enter New Password"
+                                        className="form-input w-full"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        required
+                                    />
                                 </div>
+
                                 <div>
                                     <label htmlFor="ConfirmPassword" className="dark:text-white">
                                         Confirm Password
                                     </label>
-                                    <div className="relative text-white-dark">
-                                        <input
-                                            id="ConfirmPassword"
-                                            type="password"
-                                            placeholder="Confirm New Password"
-                                            className="form-input ps-10 placeholder:text-white-dark"
-                                            value={confirmPassword}
-                                            onChange={(e) => setConfirmPassword(e.target.value)}
-                                        />
-                                    </div>
+                                    <input
+                                        id="ConfirmPassword"
+                                        type="password"
+                                        placeholder="Confirm New Password"
+                                        className="form-input w-full"
+                                        value={confirmPassword}
+                                        onChange={(e) => setConfirmPassword(e.target.value)}
+                                        required
+                                    />
                                 </div>
+
                                 {error && <p className="text-red-500">{error}</p>}
-                                <button type="submit" className="btn btn-gradient !mt-6 w-full border-0 uppercase shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)]">
-                                    RESET PASSWORD
+                                {successMessage && <p className="text-green-500">{successMessage}</p>}
+
+                                <button type="submit" className="btn btn-gradient w-full uppercase" disabled={loading}>
+                                    {loading ? 'Resetting...' : 'Reset Password'}
                                 </button>
                             </form>
+
+                            <p className="mt-4 text-center">
+                                <Link to="/auth/signin" className="text-blue-500">
+                                    Back to Login
+                                </Link>
+                            </p>
                         </div>
                     </div>
                 </div>
