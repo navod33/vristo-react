@@ -30,7 +30,7 @@ export const logout = async (token: string) => {
 };
 
 // Handle Login
-export const passwordReset = async (email: string) => {
+export const passwordResetLink = async (email: string) => {
     try {
         const response = await axios.post(`${API_URL}/api/v1/password/email`, {
             email,

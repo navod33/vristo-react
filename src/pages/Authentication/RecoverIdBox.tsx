@@ -7,7 +7,7 @@ import Dropdown from '../../components/Dropdown';
 import i18next from 'i18next';
 import IconCaretDown from '../../components/Icon/IconCaretDown';
 import IconMail from '../../components/Icon/IconMail';
-import { passwordReset } from '../../store/api/auth';
+import { passwordResetLink } from '../../store/api/auth';
 
 const RecoverIdBox = () => {
     const dispatch = useDispatch();
@@ -40,7 +40,7 @@ const RecoverIdBox = () => {
         setSuccess(null);
 
         try {
-            const response = await passwordReset(email);
+            const response = await passwordResetLink(email);
             setSuccess(response.message);
             // navigate('/auth/signin');
         } catch (err: any) {
