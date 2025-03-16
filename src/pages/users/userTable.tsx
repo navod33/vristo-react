@@ -11,6 +11,7 @@ import IconPencil from '../../components/Icon/IconPencil';
 import IconTrashLines from '../../components/Icon/IconTrashLines';
 import { Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, MenuItem } from '@mui/material';
 import { type IUser } from '../../model/user';
+import { getUsers, getUserById, deleteUser, createUser } from '../../store/api/user';
 
 const rowData = [
     {
@@ -54,7 +55,7 @@ const UserTable = () => {
     const PAGE_SIZES = [10, 20, 30, 50, 100];
     const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(PAGE_SIZES[0]);
-    const [recordsData, setRecordsData] = useState(sortBy(rowData, 'name'));
+    const [users, setUsers] = useState(sortBy(rowData, 'name'));
     const [search, setSearch] = useState('');
     const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({
         columnAccessor: 'name',
@@ -71,33 +72,33 @@ const UserTable = () => {
     const [formData, setFormData] = useState({ name: '', email: '', role: 'User' });
 
     useEffect(() => {
-        setRecordsData(rowData.filter((item) => Object.values(item).some((value) => value.toString().toLowerCase().includes(search.toLowerCase()))));
+        setUsers(rowData.filter((item) => Object.values(item).some((value) => value.toString().toLowerCase().includes(search.toLowerCase()))));
     }, [search]);
 
     useEffect(() => {
-        const sortedData = sortBy(recordsData, sortStatus.columnAccessor);
-        setRecordsData(sortStatus.direction === 'desc' ? sortedData.reverse() : sortedData);
+        const sortedData = sortBy(users, sortStatus.columnAccessor);
+        setUsers(sortStatus.direction === 'desc' ? sortedData.reverse() : sortedData);
     }, [sortStatus]);
 
     const handleAddUser = () => {
-        // setRecordsData([...recordsData, { ...formData, id: recordsData.length + 1 }]);
+        // setUsers([...users, { ...formData, id: users.length + 1 }]);
         setOpenAddDialog(false);
     };
 
     const handleEditUser = () => {
-        // setRecordsData(recordsData.map((user) => (user.id === selectedUser.id ? { ...selectedUser, ...formData } : user)));
+        // setUsers(users.map((user) => (user.id === selectedUser.id ? { ...selectedUser, ...formData } : user)));
         setOpenEditDialog(false);
     };
 
     const handleDeleteUser = () => {
-        // setRecordsData(recordsData.filter((user) => user.id !== selectedUser.id));
+        // setUsers(users.filter((user) => user.id !== selectedUser.id));
         setOpenDeleteDialog(false);
     };
 
     return (
         <div>
             {/* Header with Add User Button */}
-            <div className="flex justify-between items-center mb-4">
+            <div className="flex justify-between items-center mb-10 mt-5">
                 <h5 className="font-semibold text-lg">User Table</h5>
                 <Button variant="contained" color="primary" startIcon={<IconXCircle />} onClick={() => setOpenAddDialog(true)}>
                     Add User
@@ -111,7 +112,7 @@ const UserTable = () => {
 
             {/* User Table */}
             <DataTable
-                records={recordsData}
+                records={users}
                 columns={[
                     { accessor: 'name', title: 'Name', sortable: false },
                     { accessor: 'email', title: 'Email', sortable: false },
@@ -146,7 +147,7 @@ const UserTable = () => {
                         ),
                     },
                 ]}
-                totalRecords={recordsData.length}
+                totalRecords={users.length}
                 recordsPerPage={pageSize}
                 page={page}
                 onPageChange={setPage}
