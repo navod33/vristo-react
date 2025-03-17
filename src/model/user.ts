@@ -6,5 +6,5 @@ export interface IUser {
     created_at: string;
     updated_at: string;
     branch_id: number | null;
-    role: any[] | null;
+    roles: any[];
 }

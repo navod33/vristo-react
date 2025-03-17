@@ -38,8 +38,8 @@ const UserTable = () => {
         branch_id: 1,
     });
 
-    console.log('formData', formData);
-    console.log('users', users);
+    // console.log('formData', formData);
+    // console.log('users', users);
 
     // Fetch authentication token
     const token = localStorage.getItem('token');
@@ -100,10 +100,10 @@ const UserTable = () => {
     };
 
     // Update roles as an array of names
-    const handleRoleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const handleRoleChange = (event: any) => {
         setFormData({
             ...formData,
-            roles: event.target.value, // Directly store role names
+            roles: event.target.value,
         });
     };
 
@@ -119,12 +119,13 @@ const UserTable = () => {
         }
     };
 
-    const handleOpenEditDialog = (user: IUser) => {
+    const handleOpenEditDialog = (user: any) => {
+        // console.log('user.roles', user.roles);
         setSelectedUser(user);
         setFormData({
             name: user.name,
             email: user.email,
-            roles: user.role?.map((r: any) => r.name) || [],
+            roles: user.roles?.map((r: any) => r.name) || [],
             branch_id: 1,
         });
         setOpenEditDialog(true);
@@ -188,8 +189,8 @@ const UserTable = () => {
             <Dialog open={openAddDialog} onClose={() => setOpenAddDialog(false)}>
                 <DialogTitle>Add User</DialogTitle>
                 <DialogContent>
-                    <TextField fullWidth label="Name" margin="dense" onChange={(e) => setFormData({ ...formData, name: e.target.value })} />
-                    <TextField fullWidth label="Email" margin="dense" onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
+                    <TextField fullWidth label="Name" margin="dense" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} />
+                    <TextField fullWidth label="Email" margin="dense" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
                     <TextField
                         fullWidth
                         select
@@ -221,7 +222,7 @@ const UserTable = () => {
                 <DialogContent>
                     <TextField fullWidth label="Name" margin="dense" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} />
                     <TextField fullWidth label="Email" margin="dense" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
-                    <TextField fullWidth select label="Role" margin="dense" value={formData.role} onChange={(e) => setFormData({ ...formData, role: e.target.value })}>
+                    <TextField fullWidth select label="Role" margin="dense" value={formData.roles} SelectProps={{ multiple: true }} onChange={handleRoleChange}>
                         {roles?.map((role) => (
                             <MenuItem key={role.id} value={role.name}>
                                 {role.name}
