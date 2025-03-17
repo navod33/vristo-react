@@ -27,15 +27,19 @@ const UserTable = () => {
     const [roles, setRoles] = useState<any[]>([]);
     const [search, setSearch] = useState('');
     const [sortStatus, setSortStatus] = useState<DataTableSortStatus>({ columnAccessor: 'name', direction: 'asc' });
-
-    console.log('roles', roles);
-
-    // Dialog states
     const [openAddDialog, setOpenAddDialog] = useState(false);
     const [openEditDialog, setOpenEditDialog] = useState(false);
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
     const [selectedUser, setSelectedUser] = useState<IUser | null>(null);
-    const [formData, setFormData] = useState({ name: '', email: '', role: '' });
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        roles: [],
+        branch_id: 1,
+    });
+
+    console.log('formData', formData);
+    console.log('users', users);
 
     // Fetch authentication token
     const token = localStorage.getItem('token');
@@ -95,6 +99,14 @@ const UserTable = () => {
         }
     };
 
+    // Update roles as an array of names
+    const handleRoleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        setFormData({
+            ...formData,
+            roles: event.target.value, // Directly store role names
+        });
+    };
+
     const handleDeleteUser = async () => {
         if (!selectedUser) return;
         try {
@@ -109,7 +121,12 @@ const UserTable = () => {
 
     const handleOpenEditDialog = (user: IUser) => {
         setSelectedUser(user);
-        setFormData({ name: user.name, email: user.email, role: user.role });
+        setFormData({
+            name: user.name,
+            email: user.email,
+            roles: user.role?.map((r: any) => r.name) || [],
+            branch_id: 1,
+        });
         setOpenEditDialog(true);
     };
 
@@ -133,7 +150,11 @@ const UserTable = () => {
                     { accessor: 'name', title: 'Name' },
                     { accessor: 'email', title: 'Email' },
                     { accessor: 'branch.internal_name', title: 'Branch' },
-                    { accessor: 'role', title: 'Role' },
+                    // {
+                    //     accessor: 'role',
+                    //     title: 'Roles',
+                    //     render: (user) => user.roles?.map((r) => r.name).join(', '),
+                    // },
                     {
                         accessor: 'actions',
                         title: 'Actions',
@@ -169,7 +190,15 @@ const UserTable = () => {
                 <DialogContent>
                     <TextField fullWidth label="Name" margin="dense" onChange={(e) => setFormData({ ...formData, name: e.target.value })} />
                     <TextField fullWidth label="Email" margin="dense" onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
-                    <TextField fullWidth select label="Role" margin="dense" value={formData.role} onChange={(e) => setFormData({ ...formData, role: e.target.value })}>
+                    <TextField
+                        fullWidth
+                        select
+                        label="Roles"
+                        margin="dense"
+                        SelectProps={{ multiple: true }}
+                        value={formData.roles} // Use role names directly
+                        onChange={handleRoleChange}
+                    >
                         {roles.map((role) => (
                             <MenuItem key={role.id} value={role.name}>
                                 {role.name}
@@ -183,6 +212,7 @@ const UserTable = () => {
                         Add
                     </Button>
                 </DialogActions>
+                ``
             </Dialog>
 
             {/* Edit User Dialog */}
@@ -192,7 +222,7 @@ const UserTable = () => {
                     <TextField fullWidth label="Name" margin="dense" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} />
                     <TextField fullWidth label="Email" margin="dense" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
                     <TextField fullWidth select label="Role" margin="dense" value={formData.role} onChange={(e) => setFormData({ ...formData, role: e.target.value })}>
-                        {roles.map((role) => (
+                        {roles?.map((role) => (
                             <MenuItem key={role.id} value={role.name}>
                                 {role.name}
                             </MenuItem>
@@ -213,7 +243,7 @@ const UserTable = () => {
                 <DialogContent>Are you sure you want to delete {selectedUser?.name}?</DialogContent>
                 <DialogActions>
                     <Button onClick={() => setOpenDeleteDialog(false)}>Cancel</Button>
-                    <Button variant="contained" color="secondary" onClick={handleDeleteUser}>
+                    <Button variant="contained" color="primary" onClick={handleDeleteUser}>
                         Delete
                     </Button>
                 </DialogActions>
