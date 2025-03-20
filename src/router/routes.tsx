@@ -1,10 +1,11 @@
 import { lazy } from 'react';
 const Index = lazy(() => import('../pages/Index'));
-const UserTable = lazy(() => import('../pages/users/userTable'));
+const UserTable = lazy(() => import('../pages/users/view/userTable'));
 const LoginBoxed = lazy(() => import('../pages/Authentication/LoginBoxed'));
 const RegisterBoxed = lazy(() => import('../pages/Authentication/RegisterBoxed'));
 const ResetPasswordLink = lazy(() => import('../pages/Authentication/RecoverIdBox'));
 const ResetPasswordBox = lazy(() => import('../pages/Authentication/passwordReset'));
+const UserRole = lazy(() => import('../pages/users/view/createUserRole'));
 
 import ProtectedRoute from '../components/ProtectedRoute';
 
@@ -46,6 +47,15 @@ const routes = [
         path: '/auth/reset-password/:token',
         element: <ResetPasswordBox />,
         layout: 'blank',
+    },
+    {
+        path: '/users/user-role/create',
+        element: (
+            <ProtectedRoute>
+                <UserRole />
+            </ProtectedRoute>
+        ),
+        layout: 'default',
     },
 ];
 

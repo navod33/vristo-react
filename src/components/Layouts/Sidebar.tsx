@@ -541,10 +541,10 @@ const Sidebar = () => {
                                     <ul className="sub-menu text-gray-500">
                                         {/* <li>
                                             <NavLink to="/users/profile">{t('profile')}</NavLink>
-                                        </li>
-                                        <li>
-                                            <NavLink to="/users/user-account-settings">{t('account_settings')}</NavLink>
                                         </li> */}
+                                        <li>
+                                            <NavLink to="/users/user-role">{t('User Roles')}</NavLink>
+                                        </li>
                                         <li>
                                             <NavLink to="/users/user-table">{t('Users')}</NavLink>
                                         </li>
@@ -563,7 +563,6 @@ const Sidebar = () => {
                                         <IconCaretDown />
                                     </div>
                                 </button>
-
                                 <AnimateHeight duration={300} height={currentMenu === 'page' ? 'auto' : 0}>
                                     <ul className="sub-menu text-gray-500">
                                         <li>

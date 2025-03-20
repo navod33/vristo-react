@@ -3,14 +3,14 @@ import { useEffect, useState } from 'react';
 import sortBy from 'lodash/sortBy';
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
-import { setPageTitle } from '../../store/themeConfigSlice';
+import { setPageTitle } from '../../../store/themeConfigSlice';
 import { useDispatch } from 'react-redux';
-import IconPencil from '../../components/Icon/IconPencil';
-import IconTrashLines from '../../components/Icon/IconTrashLines';
+import IconPencil from '../../../components/Icon/IconPencil';
+import IconTrashLines from '../../../components/Icon/IconTrashLines';
 import { Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, MenuItem } from '@mui/material';
-import { IUser } from '../../model/user';
-import { getUsers, getUserById, deleteUser, createUser, updateUser } from '../../store/api/user';
-import { getRoles } from '../../store/api/role';
+import { IUser } from '../../../model/user';
+import { getUsers, getUserById, deleteUser, createUser, updateUser } from '../../../store/api/user';
+import { getRoles } from '../../../store/api/role';
 
 const UserTable = () => {
     const dispatch = useDispatch();
