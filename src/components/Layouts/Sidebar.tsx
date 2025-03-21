@@ -543,7 +543,7 @@ const Sidebar = () => {
                                             <NavLink to="/users/profile">{t('profile')}</NavLink>
                                         </li> */}
                                         <li>
-                                            <NavLink to="/users/user-role">{t('User Roles')}</NavLink>
+                                            <NavLink to="/users/user-roles">{t('User Roles')}</NavLink>
                                         </li>
                                         <li>
                                             <NavLink to="/users/user-table">{t('Users')}</NavLink>

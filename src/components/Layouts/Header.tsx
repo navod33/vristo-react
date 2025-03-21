@@ -34,6 +34,7 @@ import IconMenuForms from '../Icon/Menu/IconMenuForms';
 import IconMenuPages from '../Icon/Menu/IconMenuPages';
 import IconMenuMore from '../Icon/Menu/IconMenuMore';
 import { logoutUser } from '../../store/authSlice';
+import { getAuthenticatedUser } from '../../store/api/auth';
 
 const Header = () => {
     const location = useLocation();
@@ -145,6 +146,18 @@ const Header = () => {
     const [flag, setFlag] = useState(themeConfig.locale);
 
     const { t } = useTranslation();
+
+    // fetch authenticated user
+    const token = localStorage.getItem('token');
+
+    const fetchUser = async () => {
+        try {
+            const user = await getAuthenticatedUser(token as string);
+        } catch (error) {
+            console.error('Failed to fetch user:', error);
+        }
+    };
+    fetchUser();
 
     return (
         <header className={`z-40 ${themeConfig.semidark && themeConfig.menu === 'horizontal' ? 'dark' : ''}`}>
@@ -436,6 +449,7 @@ const Header = () => {
                                             <div className="ltr:pl-4 rtl:pr-4 truncate">
                                                 <h4 className="text-base">
                                                     John Doe
+                                                    {/* {user.name} */}
                                                     <span className="text-xs bg-success-light rounded text-success px-1 ltr:ml-2 rtl:ml-2">Pro</span>
                                                 </h4>
                                                 <button type="button" className="text-black/60 hover:text-primary dark:text-dark-light/60 dark:hover:text-white">

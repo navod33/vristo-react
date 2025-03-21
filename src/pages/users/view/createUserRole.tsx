@@ -3,9 +3,14 @@ import { useDispatch } from 'react-redux';
 import { setPageTitle } from '../../../store/themeConfigSlice';
 import { Button, TextField, FormControlLabel, Switch } from '@mui/material';
 import { getRoles, getPermissions, createRole } from '../../../store/api/role';
+import { Navigate } from 'react-router-dom';
+
+import { useNavigate } from 'react-router-dom';
 
 const UserRole = () => {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
+
     useEffect(() => {
         dispatch(setPageTitle('User Role'));
         fetchRoles();
@@ -47,8 +52,6 @@ const UserRole = () => {
         if (!roleName || selectedPermissions.length === 0) {
             return alert('Please enter a role name and select at least one permission.');
         }
-        console.log('name', roleName);
-        console.log('selectedPermissions', selectedPermissions);
 
         try {
             await createRole(
@@ -62,6 +65,7 @@ const UserRole = () => {
             setRoleName('');
             setSelectedPermissions([]);
             fetchRoles();
+            navigate(-1);
         } catch (error) {
             console.error('Error creating role:', error);
         }

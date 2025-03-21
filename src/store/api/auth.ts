@@ -50,3 +50,17 @@ export const passwordReset = async (data: any) => {
         throw error;
     }
 };
+
+// Get authenticated user
+export const getAuthenticatedUser = async (token: string) => {
+    try {
+        const response = await axios.get(`${API_URL}/api/v1/user`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        return response.data.data;
+    } catch (error) {
+        throw error;
+    }
+};
