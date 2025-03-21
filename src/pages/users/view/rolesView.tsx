@@ -58,7 +58,7 @@ const RolesView = () => {
             <div className="flex justify-between items-center mb-10 mt-5">
                 <h5 className="font-semibold text-lg">Roles List</h5>
                 <Button variant="contained" color="primary" onClick={() => navigate('create')}>
-                    Add User
+                    Add Role
                 </Button>
             </div>
 
@@ -97,8 +97,8 @@ const RolesView = () => {
                 onPageChange={setPage}
                 recordsPerPageOptions={PAGE_SIZES}
                 onRecordsPerPageChange={setPageSize}
-                sortStatus={sortStatus}
-                onSortStatusChange={setSortStatus}
+                // sortStatus={sortStatus}
+                // onSortStatusChange={setSortStatus}
             />
 
             {/* Delete Confirmation Modal */}
