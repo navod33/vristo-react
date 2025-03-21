@@ -39,7 +39,7 @@ const RolesView = () => {
     };
 
     const handleEditRole = (roleId: string) => {
-        navigate(`/user-roles/edit/${roleId}`);
+        navigate(`edit/${roleId}`);
     };
 
     const handleDeleteRole = async () => {

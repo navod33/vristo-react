@@ -160,7 +160,7 @@ const UserTable = () => {
                         accessor: 'actions',
                         title: 'Actions',
                         render: (user) => (
-                            <div className="flex gap-2">
+                            <div className="flex gap-5">
                                 <Tippy content="Edit">
                                     <button onClick={() => handleOpenEditDialog(user as any)}>
                                         <IconPencil />

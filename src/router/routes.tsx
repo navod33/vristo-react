@@ -5,7 +5,7 @@ const LoginBoxed = lazy(() => import('../pages/Authentication/LoginBoxed'));
 const RegisterBoxed = lazy(() => import('../pages/Authentication/RegisterBoxed'));
 const ResetPasswordLink = lazy(() => import('../pages/Authentication/RecoverIdBox'));
 const ResetPasswordBox = lazy(() => import('../pages/Authentication/passwordReset'));
-const UserRole = lazy(() => import('../pages/users/view/createUserRole'));
+const CreateRole = lazy(() => import('../pages/users/view/createUserRole'));
 const RolesView = lazy(() => import('../pages/users/view/rolesView'));
 
 import ProtectedRoute from '../components/ProtectedRoute';
@@ -53,7 +53,7 @@ const routes = [
         path: '/users/user-roles/create',
         element: (
             <ProtectedRoute>
-                <UserRole />
+                <CreateRole />
             </ProtectedRoute>
         ),
         layout: 'default',
@@ -63,6 +63,15 @@ const routes = [
         element: (
             <ProtectedRoute>
                 <RolesView />
+            </ProtectedRoute>
+        ),
+        layout: 'default',
+    },
+    {
+        path: '/users/user-roles/edit/:id',
+        element: (
+            <ProtectedRoute>
+                <CreateRole />
             </ProtectedRoute>
         ),
         layout: 'default',
