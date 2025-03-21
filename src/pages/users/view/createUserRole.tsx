@@ -1,36 +1,31 @@
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { useNavigate, useParams } from 'react-router-dom';
 import { setPageTitle } from '../../../store/themeConfigSlice';
 import { Button, TextField, FormControlLabel, Switch } from '@mui/material';
 import { getRoles, getPermissions, createRole, updateRole, getRoleById } from '../../../store/api/role';
-import { useNavigate } from 'react-router-dom';
 
 const UserRole = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const { id } = useParams(); // Get ID from URL params
 
-    useEffect(() => {
-        dispatch(setPageTitle('User Role'));
-        fetchRoles();
-        fetchPermissions();
-    }, [dispatch]);
-
-    const [roles, setRoles] = useState<any[]>([]);
-    const [permissions, setPermissions] = useState<any[]>([]);
     const [roleName, setRoleName] = useState('');
     const [selectedPermissions, setSelectedPermissions] = useState<number[]>([]);
+    const [permissions, setPermissions] = useState<any[]>([]);
+    const [isEditMode, setIsEditMode] = useState(false);
 
     const token = localStorage.getItem('token');
 
-    const fetchRoles = async () => {
-        try {
-            if (!token) return console.error('No auth token found');
-            const response = await getRoles(token);
-            setRoles(response);
-        } catch (error) {
-            console.error('Failed to fetch roles:', error);
+    useEffect(() => {
+        dispatch(setPageTitle(id ? 'Edit Role' : 'Create Role'));
+
+        fetchPermissions();
+        if (id) {
+            fetchRoleById(id as any);
+            setIsEditMode(true);
         }
-    };
+    }, [dispatch, id]);
 
     const fetchPermissions = async () => {
         try {
@@ -42,39 +37,58 @@ const UserRole = () => {
         }
     };
 
+    const fetchRoleById = async (roleId: number) => {
+        try {
+            if (!token) return console.error('No auth token found');
+            const response = await getRoleById(roleId, token);
+
+            setRoleName(response.name);
+            setSelectedPermissions(response.permissions.map((p: any) => p.id));
+        } catch (error) {
+            console.error('Failed to fetch role:', error);
+        }
+    };
+
     const handlePermissionChange = (permissionId: number) => {
         setSelectedPermissions((prev) => (prev.includes(permissionId) ? prev.filter((p) => p !== permissionId) : [...prev, permissionId]));
     };
 
-    const handleCreateRole = async () => {
+    const handleSubmit = async () => {
         if (!roleName || selectedPermissions.length === 0) {
             return alert('Please enter a role name and select at least one permission.');
         }
 
         try {
-            await createRole(
-                {
-                    name: roleName,
-                    permissions: selectedPermissions,
-                },
-                token
-            );
+            if (isEditMode && id) {
+                await updateRole(
+                    id as any,
+                    {
+                        name: roleName,
+                        permissions: selectedPermissions,
+                    },
+                    token as string
+                );
+            } else {
+                await createRole(
+                    {
+                        name: roleName,
+                        permissions: selectedPermissions,
+                    },
+                    token
+                );
+            }
 
-            setRoleName('');
-            setSelectedPermissions([]);
-            fetchRoles();
-            navigate(-1);
+            navigate(-1); // Go back after successful operation
         } catch (error) {
-            console.error('Error creating role:', error);
+            console.error(`Error ${isEditMode ? 'updating' : 'creating'} role:`, error);
         }
     };
 
     return (
         <div>
             <div className="p-5 bg-white rounded-lg shadow-md">
-                {/* <h5 className="font-semibold text-lg mb-5">Create Role</h5> */}
                 <div className="flex justify-between items-center mb-10 mt-5">
-                    <h5 className="font-semibold text-lg">Create Role</h5>
+                    <h5 className="font-semibold text-lg">{isEditMode ? 'Edit Role' : 'Create Role'}</h5>
                 </div>
 
                 {/* Role Name Input */}
@@ -88,8 +102,8 @@ const UserRole = () => {
                 </div>
 
                 {/* Submit Button */}
-                <Button variant="contained" color="primary" onClick={handleCreateRole}>
-                    Submit
+                <Button variant="contained" color="primary" onClick={handleSubmit}>
+                    {isEditMode ? 'Update' : 'Create'}
                 </Button>
             </div>
         </div>
