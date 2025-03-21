@@ -47,7 +47,7 @@ const RolesView = () => {
             if (!selectedRole || !token) return;
             await deleteRole(selectedRole.id, token);
             setDeleteDialogOpen(false);
-            fetchRoles(); // Refresh the roles list
+            fetchRoles();
         } catch (error) {
             console.error('Error deleting role:', error);
         }
@@ -106,10 +106,8 @@ const RolesView = () => {
                 <DialogTitle>Confirm Delete</DialogTitle>
                 <DialogContent>Are you sure you want to delete this role?</DialogContent>
                 <DialogActions>
-                    <Button onClick={() => setDeleteDialogOpen(false)} color="secondary">
-                        Cancel
-                    </Button>
-                    <Button onClick={handleDeleteRole} color="error">
+                    <Button onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
+                    <Button variant="contained" color="primary" onClick={handleDeleteRole}>
                         Delete
                     </Button>
                 </DialogActions>
