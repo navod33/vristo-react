@@ -2,87 +2,76 @@ import axios from 'axios';
 
 const API_URL = 'http://expo.ecentic.com';
 
-// Get all roles
-export const getRoles = async (token: string) => {
+// Create an Axios instance
+const apiClient = axios.create({
+    baseURL: API_URL,
+    headers: {
+        'Content-Type': 'application/json',
+    },
+});
+
+// Add a request interceptor to include the token
+apiClient.interceptors.request.use(
+    (config) => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+    },
+    (error) => Promise.reject(error)
+);
+
+// API functions using the Axios instance
+
+export const getRoles = async () => {
     try {
-        // const response = await axios.get(`${API_URL}/api/v1/roles`);
-        const response = await axios.get(`${API_URL}/api/v1/roles`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
+        const response = await apiClient.get('/api/v1/roles');
         return response.data.data;
     } catch (error) {
         throw error;
     }
 };
 
-export const getPermissions = async (token: string) => {
+export const getPermissions = async () => {
     try {
-        // const response = await axios.get(`${API_URL}/api/v1/roles`);
-        const response = await axios.get(`${API_URL}/api/v1/permissions`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
+        const response = await apiClient.get('/api/v1/permissions');
         return response.data.data;
     } catch (error) {
         throw error;
     }
 };
 
-// Get role by ID
-export const getRoleById = async (id: number, token: string) => {
+export const getRoleById = async (id: number) => {
     try {
-        const response = await axios.get(`${API_URL}/api/v1/roles/${id}`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
+        const response = await apiClient.get(`/api/v1/roles/${id}`);
         return response.data.data;
     } catch (error) {
         throw error;
     }
 };
 
-// Create a new role
-export const createRole = async (roleData: { name: string; permissions: number[] }, token: any) => {
+export const createRole = async (roleData: { name: string; permissions: number[] }) => {
     try {
-        const response = await axios.post(`${API_URL}/api/v1/roles`, roleData, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-        });
+        const response = await apiClient.post('/api/v1/roles', roleData);
         return response.data;
     } catch (error) {
         throw error;
     }
 };
 
-// Update an existing role
-export const updateRole = async (id: number, roleData: { name: string; permissions: number[] }, token: string) => {
+export const updateRole = async (id: number, roleData: { name: string; permissions: number[] }) => {
     try {
-        const response = await axios.patch(`${API_URL}/api/v1/roles/${id}`, roleData, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-        });
+        const response = await apiClient.patch(`/api/v1/roles/${id}`, roleData);
         return response.data;
     } catch (error) {
         throw error;
     }
 };
 
-// Delete a role
-export const deleteRole = async (id: number, token: string) => {
+export const deleteRole = async (id: number) => {
     try {
-        const response = await axios.delete(`${API_URL}/api/v1/roles/${id}`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
+        const response = await apiClient.delete(`/api/v1/roles/${id}`);
         return response.data;
     } catch (error) {
         throw error;

@@ -33,7 +33,7 @@ const UserRole = () => {
     const fetchPermissions = async () => {
         try {
             if (!token) return console.error('No auth token found');
-            const response = await getPermissions(token);
+            const response = await getPermissions();
             setPermissions(response);
         } catch (error) {
             console.error('Failed to fetch permissions:', error);
@@ -43,7 +43,7 @@ const UserRole = () => {
     const fetchRoleById = async (roleId: number) => {
         try {
             if (!token) return console.error('No auth token found');
-            const response = await getRoleById(roleId, token);
+            const response = await getRoleById(roleId);
 
             setRoleName(response.name);
             setSelectedPermissions(response.permissions.map((p: any) => p.id));
@@ -81,22 +81,15 @@ const UserRole = () => {
 
         try {
             if (isEditMode && id) {
-                await updateRole(
-                    id as any,
-                    {
-                        name: roleName.trim(),
-                        permissions: selectedPermissions,
-                    },
-                    token as string
-                );
+                await updateRole(id as any, {
+                    name: roleName.trim(),
+                    permissions: selectedPermissions,
+                });
             } else {
-                await createRole(
-                    {
-                        name: roleName.trim(),
-                        permissions: selectedPermissions,
-                    },
-                    token
-                );
+                await createRole({
+                    name: roleName.trim(),
+                    permissions: selectedPermissions,
+                });
             }
 
             navigate(-1); // Go back after successful operation

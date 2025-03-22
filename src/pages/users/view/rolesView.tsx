@@ -31,7 +31,7 @@ const RolesView = () => {
     const fetchRoles = async () => {
         try {
             if (!token) return console.error('No auth token found');
-            const response = await getRoles(token);
+            const response = await getRoles();
             setRoles(response);
         } catch (error) {
             console.error('Failed to fetch roles:', error);
@@ -45,7 +45,7 @@ const RolesView = () => {
     const handleDeleteRole = async () => {
         try {
             if (!selectedRole || !token) return;
-            await deleteRole(selectedRole.id, token);
+            await deleteRole(selectedRole.id);
             setDeleteDialogOpen(false);
             fetchRoles();
         } catch (error) {

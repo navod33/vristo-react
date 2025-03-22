@@ -55,7 +55,7 @@ const UserTable = () => {
     const fetchRoles = async () => {
         try {
             if (!token) return console.error('No auth token found');
-            const response = await getRoles(token);
+            const response = await getRoles();
             setRoles(response);
         } catch (error) {
             console.error('Failed to fetch roles:', error);
