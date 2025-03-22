@@ -37,6 +37,23 @@ import { logoutUser } from '../../store/authSlice';
 import { getAuthenticatedUser } from '../../store/api/auth';
 
 const Header = () => {
+    const [user, setUser] = useState<any | null>();
+
+    console.log(user);
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            try {
+                const user = await getAuthenticatedUser();
+                setUser(user);
+            } catch (error) {
+                console.error('Failed to fetch user:', error);
+            }
+        };
+
+        fetchUser();
+    }, []);
+
     const location = useLocation();
     useEffect(() => {
         const selector = document.querySelector('ul.horizontal-menu a[href="' + window.location.pathname + '"]');
@@ -146,18 +163,6 @@ const Header = () => {
     const [flag, setFlag] = useState(themeConfig.locale);
 
     const { t } = useTranslation();
-
-    // fetch authenticated user
-    const token = localStorage.getItem('token');
-
-    const fetchUser = async () => {
-        try {
-            const user = await getAuthenticatedUser();
-        } catch (error) {
-            console.error('Failed to fetch user:', error);
-        }
-    };
-    fetchUser();
 
     return (
         <header className={`z-40 ${themeConfig.semidark && themeConfig.menu === 'horizontal' ? 'dark' : ''}`}>
@@ -448,12 +453,11 @@ const Header = () => {
                                             <img className="rounded-md w-10 h-10 object-cover" src="/assets/images/user-profile.jpeg" alt="userProfile" />
                                             <div className="ltr:pl-4 rtl:pr-4 truncate">
                                                 <h4 className="text-base">
-                                                    John Doe
-                                                    {/* {user.name} */}
-                                                    <span className="text-xs bg-success-light rounded text-success px-1 ltr:ml-2 rtl:ml-2">Pro</span>
+                                                    {user ? user.name : 'Loading...'}
+                                                    {/* {user && <span className="text-xs bg-success-light rounded text-success px-1 ltr:ml-2 rtl:ml-2">Pro</span>} */}
                                                 </h4>
                                                 <button type="button" className="text-black/60 hover:text-primary dark:text-dark-light/60 dark:hover:text-white">
-                                                    johndoe@gmail.com
+                                                    {user ? user.email : 'Loading...'}
                                                 </button>
                                             </div>
                                         </div>
