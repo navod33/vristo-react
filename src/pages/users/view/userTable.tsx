@@ -38,10 +38,6 @@ const UserTable = () => {
         branch_id: 1,
     });
 
-    // console.log('formData', formData);
-    // console.log('users', users);
-
-    // Fetch authentication token
     const token = localStorage.getItem('token');
 
     // Fetch users from API
@@ -77,6 +73,11 @@ const UserTable = () => {
     }, [sortStatus]);
 
     const handleAddUser = async () => {
+        if (!formData.name || !formData.email || !formData.roles.length) {
+            console.error('All fields are required.');
+            return;
+        }
+
         try {
             if (!token) return console.error('No auth token found');
             await createUser(token, formData);
@@ -89,6 +90,12 @@ const UserTable = () => {
 
     const handleEditUser = async () => {
         if (!selectedUser) return;
+
+        if (!formData.name || !formData.email || !formData.roles.length) {
+            console.error('All fields are required.');
+            return;
+        }
+
         try {
             if (!token) return console.error('No auth token found');
             await updateUser(token, selectedUser.id, formData);
@@ -181,21 +188,22 @@ const UserTable = () => {
                 onPageChange={setPage}
                 recordsPerPageOptions={PAGE_SIZES}
                 onRecordsPerPageChange={setPageSize}
-                sortStatus={sortStatus}
-                onSortStatusChange={setSortStatus}
+                // sortStatus={sortStatus}
+                // onSortStatusChange={setSortStatus}
             />
 
             {/* Add User Dialog */}
             <Dialog open={openAddDialog} onClose={() => setOpenAddDialog(false)}>
                 <DialogTitle>Add User</DialogTitle>
                 <DialogContent>
-                    <TextField fullWidth label="Name" margin="dense" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} />
-                    <TextField fullWidth label="Email" margin="dense" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
+                    <TextField fullWidth label="Name" margin="dense" required value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} />
+                    <TextField fullWidth label="Email" margin="dense" required value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
                     <TextField
                         fullWidth
                         select
                         label="Roles"
                         margin="dense"
+                        required
                         SelectProps={{ multiple: true }}
                         value={formData.roles} // Use role names directly
                         onChange={handleRoleChange}
@@ -220,9 +228,9 @@ const UserTable = () => {
             <Dialog open={openEditDialog} onClose={() => setOpenEditDialog(false)}>
                 <DialogTitle>Edit User</DialogTitle>
                 <DialogContent>
-                    <TextField fullWidth label="Name" margin="dense" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} />
-                    <TextField fullWidth label="Email" margin="dense" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
-                    <TextField fullWidth select label="Role" margin="dense" value={formData.roles} SelectProps={{ multiple: true }} onChange={handleRoleChange}>
+                    <TextField fullWidth label="Name" margin="dense" required value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} />
+                    <TextField fullWidth label="Email" margin="dense" required value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
+                    <TextField fullWidth select label="Role" margin="dense" required value={formData.roles} SelectProps={{ multiple: true }} onChange={handleRoleChange}>
                         {roles?.map((role) => (
                             <MenuItem key={role.id} value={role.name}>
                                 {role.name}
