@@ -44,7 +44,7 @@ const UserTable = () => {
     const fetchUsers = async () => {
         try {
             if (!token) return console.error('No auth token found');
-            const response = await getUsers(token);
+            const response = await getUsers();
             setUsers(sortBy(response, 'name'));
         } catch (error) {
             console.error('Failed to fetch users:', error);
@@ -80,7 +80,7 @@ const UserTable = () => {
 
         try {
             if (!token) return console.error('No auth token found');
-            await createUser(token, formData);
+            await createUser(formData);
             fetchUsers();
             setOpenAddDialog(false);
         } catch (error) {
@@ -98,7 +98,7 @@ const UserTable = () => {
 
         try {
             if (!token) return console.error('No auth token found');
-            await updateUser(token, selectedUser.id, formData);
+            await updateUser(selectedUser.id, formData);
             fetchUsers();
             setOpenEditDialog(false);
         } catch (error) {
@@ -118,7 +118,7 @@ const UserTable = () => {
         if (!selectedUser) return;
         try {
             if (!token) return console.error('No auth token found');
-            await deleteUser(token, selectedUser.id);
+            await deleteUser(selectedUser.id);
             fetchUsers();
             setOpenDeleteDialog(false);
         } catch (error) {

@@ -152,7 +152,7 @@ const Header = () => {
 
     const fetchUser = async () => {
         try {
-            const user = await getAuthenticatedUser(token as string);
+            const user = await getAuthenticatedUser();
         } catch (error) {
             console.error('Failed to fetch user:', error);
         }

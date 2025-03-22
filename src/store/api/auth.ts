@@ -2,63 +2,69 @@ import axios from 'axios';
 
 const API_URL = 'http://expo.ecentic.com';
 
-// Handle Login
+// Create an Axios instance
+const apiClient = axios.create({
+    baseURL: API_URL,
+    headers: {
+        'Content-Type': 'application/json',
+    },
+});
+
+// Add a request interceptor to include the token automatically
+apiClient.interceptors.request.use(
+    (config) => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+    },
+    (error) => Promise.reject(error)
+);
+
+// **Handle Login**
 export const login = async (email: string, password: string) => {
     try {
-        const response = await axios.post(`${API_URL}/api/v1/login`, {
-            email,
-            password,
-        });
+        const response = await apiClient.post('/api/v1/login', { email, password });
         return response.data.data;
     } catch (error) {
         throw error;
     }
 };
 
-// Handle Logout
-export const logout = async (token: string) => {
+// **Handle Logout**
+export const logout = async () => {
     try {
-        console.log('eeeeeee', token);
-        await axios.get(`${API_URL}/api/v1/logout`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
+        await apiClient.get('/api/v1/logout');
     } catch (error) {
         console.error('Logout failed:', error);
     }
 };
 
-// send reset passwod link
+// **Send Reset Password Link**
 export const passwordResetLink = async (email: string) => {
     try {
-        const response = await axios.post(`${API_URL}/api/v1/password/email`, {
-            email,
-        });
+        const response = await apiClient.post('/api/v1/password/email', { email });
         return response.data;
     } catch (error) {
         throw error;
     }
 };
 
-// Handle reset passwod link
+// **Handle Reset Password**
 export const passwordReset = async (data: any) => {
     try {
-        const response = await axios.post(`${API_URL}/api/v1/password/reset`, data);
+        const response = await apiClient.post('/api/v1/password/reset', data);
         return response.data;
     } catch (error) {
         throw error;
     }
 };
 
-// Get authenticated user
-export const getAuthenticatedUser = async (token: string) => {
+// **Get Authenticated User**
+export const getAuthenticatedUser = async () => {
     try {
-        const response = await axios.get(`${API_URL}/api/v1/user`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
+        const response = await apiClient.get('/api/v1/user');
         return response.data.data;
     } catch (error) {
         throw error;
